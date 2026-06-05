@@ -3,6 +3,7 @@ from rate_limiter.models import RateLimitRule
 from rate_limiter.limiters.base import RateLimiter
 from rate_limiter.limiters.fixed_window import FixedWindowLimiter
 from rate_limiter.limiters.sliding_window import SlidingWindowLimiter
+from rate_limiter.limiters.token_bucket import TokenBucketLimiter
 from rate_limiter.exceptions import InvalidConfigurationError
         
 class RateLimiterFactory:
@@ -13,7 +14,7 @@ class RateLimiterFactory:
             return FixedWindowLimiter(rule)
         elif algorithm == Algorithm.SLIDING_WINDOW:
             return SlidingWindowLimiter(rule)
-        # TODO: elif algorithm == Algorithm.TOKEN_BUCKET:
-        #     return TokenBucketLimiter(rule)
+        elif algorithm == Algorithm.TOKEN_BUCKET:
+            return TokenBucketLimiter(rule)
         else:
             raise InvalidConfigurationError (f"Unsupported algorithm: {algorithm}")
