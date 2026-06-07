@@ -47,7 +47,7 @@ class FixedWindowLimiter(base.RateLimiter):
             curr_count = curr_count + 1
             self._store[redis_key]={"count":curr_count, "window_start_time": window_start}
             
-            reset_at = datetime.datetime.fromtimestamp(window_start+self.rule.window_seconds)
+            reset_at = datetime.datetime.now() + datetime.timedelta(seconds=window_start + self.rule.window_seconds - curr_time)
             
             remaining_req = max(0,self.rule.requests - curr_count)  #remaining req can go -ve in case when count is more than allowed number of request(the case where we need to drop)
             curr_status = None

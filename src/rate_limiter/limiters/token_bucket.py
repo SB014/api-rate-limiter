@@ -1,7 +1,7 @@
 from rate_limiter.limiters.base import RateLimiter
 from rate_limiter.models import RateLimitResult,RateLimitKey
 from rate_limiter.enums import RateLimitStatus
-from datetime import datetime
+from datetime import datetime,timedelta
 import threading
 import time
 class TokenBucketLimiter(RateLimiter):
@@ -60,6 +60,7 @@ class TokenBucketLimiter(RateLimiter):
                 remaining = int(self._store[redis_key]["tokens"])
             
             limit = self.rule.requests
-            reset_at = datetime.fromtimestamp(curr_time + (1 / self._refill_rate))
+            # correct
+            reset_at = datetime.now() + timedelta(seconds=(1 / self._refill_rate))
             
             return RateLimitResult(status=status, limit=limit, remaining=remaining, reset_at=reset_at, retry_after=retry_after)

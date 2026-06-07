@@ -34,22 +34,29 @@ class SlidingWindowLimiter(base.RateLimiter):
                
             if(len(timestamps_deque) < request_limit):
                 if(len(timestamps_deque)==0):
-                    reset_at = datetime.datetime.fromtimestamp(curr_time+window_duration)
+                    reset_at = datetime.datetime.now() + datetime.timedelta(seconds=window_duration)
                 else:
-                    reset_at = datetime.datetime.fromtimestamp(timestamps_deque[0]+window_duration)                    
+                    reset_at = datetime.datetime.now() + datetime.timedelta(
+                        seconds=window_duration - (curr_time - timestamps_deque[0])
+                    )
+
                 curr_status = RateLimitStatus.ALLOWED
                 timestamps_deque.append(curr_time)
 
                 retry_after = 0.0
             else:
                 curr_status = RateLimitStatus.DENIED
-                reset_at = datetime.datetime.fromtimestamp(timestamps_deque[0]+window_duration)
+                reset_at = datetime.datetime.now() + datetime.timedelta(
+                    seconds=window_duration - (curr_time - timestamps_deque[0])
+                )
                 retry_after = timestamps_deque[0] + window_duration - curr_time
             
             remaining_req = max(0, request_limit-len(timestamps_deque))
             
-
-        
-            return RateLimitResult(status=curr_status, limit=self.rule.requests, remaining = remaining_req,reset_at=reset_at, retry_after=retry_after)
-            
-                
+            return RateLimitResult(
+                status=curr_status,
+                limit=self.rule.requests,
+                remaining=remaining_req,
+                reset_at=reset_at,
+                retry_after=retry_after
+            )
