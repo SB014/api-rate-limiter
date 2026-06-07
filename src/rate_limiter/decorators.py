@@ -34,3 +34,11 @@ def rate_limit(limiter: RateLimiter, scope: Scope = Scope.IP, rule_name: str = "
         return wrapper
     return decorator                
             
+
+# call sign:
+# @rate_limit(limiter=my_limiter)
+# def my_endpoint(request):
+#     ...
+
+
+#rate_limit(limiter=my_limiter) runs first — it's just a regular function call that returns a decorator. Then that decorator receives my_endpoint.
