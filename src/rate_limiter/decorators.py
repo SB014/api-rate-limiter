@@ -8,7 +8,7 @@ from rate_limiter.exceptions import RateLimitExceeded
 def rate_limit(limiter: RateLimiter, scope: Scope = Scope.IP, rule_name: str = "default"):
     def decorator(func): 
         @functools.wraps(func)
-        def wrapper(*args,**kwargs):
+        async def wrapper(*args,**kwargs):
             sig = inspect.signature(func)
             if "request" in sig.parameters:
                 
@@ -24,13 +24,13 @@ def rate_limit(limiter: RateLimiter, scope: Scope = Scope.IP, rule_name: str = "
                 
                 
                 # calling is_allowed of limiter
-                rl_result = limiter.is_allowed(rl_key)
+                rl_result = await limiter.is_allowed(rl_key)
                 if rl_result.is_allowed:
-                    return func(*args, **kwargs)
+                    return await func(*args, **kwargs)
                 
                 raise RateLimitExceeded("Rate Limit has exceeded", retry_after=rl_result.retry_after, limit=rl_result.limit)
             else:
-                return func(*args, **kwargs)
+                return await func(*args, **kwargs)
         return wrapper
     return decorator                
             

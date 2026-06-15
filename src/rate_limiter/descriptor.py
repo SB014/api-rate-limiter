@@ -18,8 +18,7 @@ class RateLimitDescriptor:
     def __get__(self, instance, owner=None):
         if instance is None:
             return self     #accessed from class
-        elif instance is not None:
-            return functools.partial(self, instance)
+        return functools.partial(self, instance)
     
     def __call__(self, *args, **kwargs):
         sig = inspect.signature(self._func)
@@ -42,7 +41,7 @@ class RateLimitDescriptor:
         else:
             return self._func(*args, **kwargs)
     
-def rate_limit_descriptor(limiter, scope=Scope.IP, rule_name="default"):
+def rate_limit_descriptor(limiter: RateLimiter, scope=Scope.IP, rule_name="default"):
     def decorator(func):
         return RateLimitDescriptor(func, limiter, scope, rule_name)
     return decorator

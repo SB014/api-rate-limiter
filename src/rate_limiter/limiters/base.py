@@ -6,12 +6,12 @@ class RateLimiter(ABC):
         self.rule = rule
         
     @abstractmethod
-    def is_allowed(self, key: RateLimitKey)->RateLimitResult:
+    async def is_allowed(self, key: RateLimitKey)->RateLimitResult:
         """the core check"""
         ...
         
     @abstractmethod
-    def reset(self, key: RateLimitKey)->None:
+    async def reset(self, key: RateLimitKey)->None:
         """clears state for a key"""
         ...
         

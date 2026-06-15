@@ -23,7 +23,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         
         # calling is_allowed of limiter
         
-        rl_result = self._limiter.is_allowed(rl_key)
+        rl_result = await self._limiter.is_allowed(rl_key)
         if rl_result.is_allowed:
             response = await call_next(request)
             

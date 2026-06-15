@@ -10,8 +10,8 @@ class RateLimitContext:
         self._reset_on_exit = reset_on_exit
         self._result = None
     
-    def __enter__(self):
-        self._result = self._limiter.is_allowed(self._key)
+    async def __aenter__(self):
+        self._result = await self._limiter.is_allowed(self._key)
         if self._result.is_allowed:
             return self._result
         else:
@@ -21,9 +21,11 @@ class RateLimitContext:
                 limit=self._result.limit
 )
         
-    def __exit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc, tb):
+        # Returning True from __exit__ means suppress the exception - The with block would act as if nothing went wrong, even if RateLimitExceeded was raised inside __enter__ or inside the block body.
+        # Returning False (what you have) means let the exception propagate — the caller sees it normally.
         if self._reset_on_exit:
-            self._limiter.reset(self._key)
+            await self._limiter.reset(self._key)
         return False
         
     
