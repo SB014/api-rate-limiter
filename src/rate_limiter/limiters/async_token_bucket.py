@@ -35,13 +35,12 @@ class AsyncTokenBucketLimiter(AsyncRedisRateLimiter):
             # consume 1 token immediately for this request (requests - 1 remaining)
             # no TTL set — token bucket has no fixed window, bucket persists indefinitely
             # idle users are naturally handled by the refill calculation on next request
-            tokens = float(self.rule.requests - 1)
+            tokens = float(self.rule.requests)
             await redis.hset(key.redis_key, mapping={
                 "token_count": tokens,
                 "last_refill": curr_time
             })
-            status = RateLimitStatus.ALLOWED
-
+            
         else:
             # bucket exists — refill tokens based on elapsed time since last request
             # elapsed_time: seconds since last refill
