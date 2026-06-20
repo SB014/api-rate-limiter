@@ -43,4 +43,10 @@ class Settings(BaseSettings):
 
 @lru_cache()   
 def get_settings() -> Settings:
-    return Settings()
+    return Settings() # type: ignore[call-arg]
+
+# without the comment it shows error: Argument missing for parameter "admin_key":
+#     It's a known limitation of static type checkers with pydantic_settings.BaseSettings — they can't see that required fields get populated from environment variables at runtime, so they flag it as if you forgot to pass an argument to a regular constructor.
+# type: ignore[call-arg]
+
+# This tells Pyright/Pylance specifically "I know what I'm doing here, don't flag this line." It doesn't affect runtime behavior at all.
