@@ -5,6 +5,7 @@ from rate_limiter.models import RateLimitRule
 from rate_limiter.config import get_settings
 from rate_limiter.enums import Scope
 from rate_limiter.middleware import RateLimitMiddleware
+from rate_limiter.routers import admin, proxy
 
 
 @asynccontextmanager
@@ -64,7 +65,8 @@ app = FastAPI(title="Rate Limiter Gateway", lifespan=lifespan)
 # on every request, not at __init__ time — by the time any real request
 # arrives, lifespan has already completed and app.state.limiter is set.
 app.add_middleware(RateLimitMiddleware)
-
+app.include_router(admin.router)
+app.include_router(proxy.router)
 
 @app.get("/health")
 async def health_check():
